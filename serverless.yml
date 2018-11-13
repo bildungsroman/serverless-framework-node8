@@ -1,10 +1,30 @@
-# starter serverless.yml
-
 service:
   name: myService
-
-frameworkVersion: ">=1.0.0 <2.0.0"
-
+frameworkVersion: '>=1.0.0 <2.0.0'
 provider:
   name: aws
   runtime: nodejs8.10
+functions:
+  aFunction:
+    handler: index.handler
+    description:
+      Fn::Sub:
+        - 'Stackery Stack #{StackeryStackTagName} Environment #{StackeryEnvironmentTagName} Function #{ResourceName}'
+        - ResourceName: aFunction
+    events:
+      - http:
+          path: /path
+          method: POST
+resources:
+  Parameters:
+    StackeryStackTagName:
+      Type: String
+      Description: Stack Name (injected by Stackery at deployment time)
+      Default:
+        name: myService
+    StackeryEnvironmentTagName:
+      Type: String
+      Description: Environment Name (injected by Stackery at deployment time)
+      Default: dev
+plugins:
+  - serverless-cf-vars
